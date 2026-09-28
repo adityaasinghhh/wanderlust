@@ -1,0 +1,152 @@
+<% layout("/layouts/boilerplate") %>
+<body>
+  
+<!-- Overlay -->
+<div class="absolute inset-0 bg-black bg-opacity-50"></div>
+
+<!-- Main Content -->
+<div class="relative z-10 flex items-center justify-center min-h-screen px-4 py-10">
+  <div class="bg-[#1e1e1e] text-white bg-opacity-90 backdrop-blur-sm rounded-xl shadow-2xl max-w-xl w-full overflow-hidden">
+
+    <% if (success && success.length > 0) { %>
+      <div id="flashji" class="z-20 relative mx-auto mb-6 w-fit px-6 py-3 rounded-xl bg-green-500 bg-opacity-90 text-white text-center font-semibold shadow-lg animate-fadeIn">
+        ✅ <%= success[0] %>
+      </div>
+    <% } %> 
+    <% if (error && error.length > 0) { %>
+      <div id="flashji" class="z-20 relative mx-auto mb-6 w-fit px-6 py-3 rounded-xl bg-red-500 bg-opacity-90 text-white text-center font-semibold shadow-lg animate-fadeIn">
+        ⚠️ <%= error[0] %>
+      </div>
+    <% } %> 
+    
+    <!-- Back Button -->
+    <div class="flex items-center p-4 border-b border-gray-200">
+      <a href="/listings" class="hover:text-blue-600 font-semibold flex items-center gap-2">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+        </svg>
+        Back
+      </a>
+    </div>
+
+    <!-- Listing Image -->
+    <img src="<%= listing.image.url %>" alt="<%= listing.title %>" class="w-full h-60 object-cover" />
+
+    <!-- Listing Info -->
+    <div class="p-6 space-y-4">
+      <h1 class="text-2xl font-bold text-white">🏠 <%= listing.title %></h1>
+      <p class="text-white text-lg">💰 <b>Price: ₹</b> <%= listing.price.toLocaleString("en-IN") %></p>
+      <p class="text-white text-lg">📍 <b>Location:</b> <%= listing.location %>, <%= listing.country %></p>
+      <p class="text-white">📝 <%= listing.description %></p>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="flex justify-end space-x-2 px-4 pb-4">
+      <a href="/listings/<%= listing._id %>/edit"
+         class="inline-flex items-center px-3 py-1 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm font-medium shadow">
+        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round"
+                d="M15.232 5.232l3.536 3.536M9 13l6.586-6.586a2 2 0 112.828 2.828L11.828 15.828a4 4 0 01-1.414.828l-4 1a1 1 0 01-1.263-1.263l1-4a4 4 0 01.828-1.414z" />
+        </svg>
+        Edit
+      </a>
+      <a href="/listings/<%= listing._id %>/delete"
+         class="inline-flex items-center px-3 py-1 bg-red-600 text-white rounded-lg hover:bg-red-700 transition text-sm font-medium shadow">
+        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+        Delete
+      </a>
+    </div>
+
+    <!-- Leave a Review -->
+    <!-- Leave a Review -->
+    <div class="px-6 pb-6">
+      <h3 class="text-xl font-semibold text-white mb-4 border-b border-gray-600 pb-2">📝 Leave a Review</h3>
+      <form method="POST" action="/listings/<%= listing._id %>/reviews" class="space-y-4">
+        
+        <!-- Slot Machine Star Rating -->
+        <fieldset class="starability-slot">
+          <legend class="block text-sm font-medium text-gray-300 mb-2">Rate this listing:</legend>
+
+          <input type="radio" id="no-rate" class="input-no-rate" name="rating" value="0" checked aria-label="No rating." />
+          <input type="radio" id="rate1" name="rating" value="1" />
+          <label for="rate1" title="Terrible">1 star</label>
+          <input type="radio" id="rate2" name="rating" value="2" />
+          <label for="rate2" title="Not good">2 stars</label>
+          <input type="radio" id="rate3" name="rating" value="3" />
+          <label for="rate3" title="Average">3 stars</label>
+          <input type="radio" id="rate4" name="rating" value="4" />
+          <label for="rate4" title="Very good">4 stars</label>
+          <input type="radio" id="rate5" name="rating" value="5" />
+          <label for="rate5" title="Amazing">5 stars</label>
+        </fieldset>
+
+        <!-- Comment -->
+        <div class="relative w-full max-w-md">
+          <label for="comment" class="block text-sm font-medium text-gray-300 mb-1">Comment</label>
+          <textarea
+            name="comment"
+            id="comment"
+            required
+            rows="4"
+            placeholder="Write your thoughts..."
+            class="w-full p-3 rounded-lg bg-gray-800 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+            oninvalid="this.setCustomValidity('Please Comment kare🙏')"
+            oninput="this.setCustomValidity('')"
+          ></textarea>
+          <p class="absolute text-sm text-red-500 mt-1 hidden" id="commentError">Please Comment kare🙏</p>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit"
+                class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg shadow">
+          Submit Review
+        </button>
+
+      </form>
+    </div>
+
+
+    <!-- Show Reviews -->
+    <div class="px-6 pb-8">
+      <h3 class="text-xl font-semibold text-white mb-4 border-b border-gray-600 pb-2">📣 Reviews</h3>
+      <ul class="space-y-4">
+        <% if (listing.reviews.length > 0) { %>
+          <% listing.reviews.forEach(review => { %>
+            <li class="bg-gray-800 p-4 rounded-lg shadow border border-gray-700">
+              <p><span class="font-semibold text-blue-400">Rating:</span> <%= review.rating %> ⭐</p>
+              <p><span class="font-semibold text-blue-400">Comment:</span> <%= review.comment %></p>
+              <p class="text-sm text-gray-400 mt-1">🗓️ <%= new Date(review.createdAt).toLocaleDateString() %></p>
+              <form action="/listings/<%= listing._id %>/deleteReview/<%= review._id %>" method="post">
+                <div class="flex justify-end space-x-2 px-4 pb-4">
+                <button
+                class="inline-flex items-center px-3 py-1 bg-red-600 text-white rounded-lg hover:bg-red-700 transition text-sm font-medium shadow">
+                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+                  Delete
+                </button>
+              </div>
+              </form>
+            </li>
+          <% }) %>
+        <% } else { %>
+          <li class="text-gray-300 italic">No reviews yet. Be the first to share your experience!</li>
+        <% } %>
+      </ul>
+    </div>
+
+  </div>
+</div>
+
+
+<script>
+  const flash = document.getElementById('flashji');
+  setTimeout(()=>{
+    if(flash){
+      flash.style.display = 'none';
+    }
+  },2000);
+</script>
+</body>

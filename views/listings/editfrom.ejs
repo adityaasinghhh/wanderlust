@@ -1,0 +1,117 @@
+<% layout("/layouts/boilerplate") %>
+
+<div class="min-h-screen flex items-center justify-center px-4 py-8">
+  <div
+    class="bg-[#1e1e1e] border border-gray-700 shadow-xl rounded-2xl p-6 sm:p-8 max-w-4xl w-full flex flex-col sm:flex-row gap-6"
+  >
+    <div class="flex-1 flex flex-col space-y-4">
+      <h2 class="text-2xl font-semibold text-white text-center sm:text-left mb-4">
+        Edit Listing: <span class="text-yellow-400"><%= listing._id %></span>
+      </h2>
+
+      <form 
+        id="editForm" 
+        method="POST" 
+        action="/listings/<%= listing._id %>?_method=PUT" 
+        enctype="multipart/form-data"
+        novalidate 
+        class="flex flex-col space-y-4"
+      >
+        <% const fields = ["title", "description", "price", "location", "country"]; %>
+        <% fields.forEach(field => { %>
+          <div>
+            <input
+              type="text"
+              name="<%= field %>"
+              id="<%= field %>"
+              value="<%= listing[field] %>"
+              placeholder="<%= field.charAt(0).toUpperCase() + field.slice(1) %>"
+              required
+              class="p-3 w-full rounded-md bg-white/10 text-white placeholder-gray-400 border border-white/20 focus:outline-none"
+            />
+            <p class="text-red-500 text-sm mt-1 hidden">Please enter a valid <%= field %>.</p>
+          </div>
+        <% }) %>
+
+        <!-- Show current image -->
+        <div>
+          <p class="text-gray-300 mb-1">Current Image:</p>
+          <img 
+            src="<%= listing.image?.url || listing.image %>" 
+            alt="<%= listing.title %>" 
+            class="w-48 h-32 object-cover rounded-md" 
+          />
+        </div>
+
+        <!-- Upload new image -->
+        <div>
+          <label for="image" class="block text-gray-300 mb-1">Change Image:</label>
+          <input
+            type="file"
+            name="image"
+            id="image"
+            accept="image/*"
+            class="block w-full text-white file:bg-yellow-400 file:text-black file:font-semibold file:px-4 file:py-2 file:rounded-lg"
+          />
+        </div>
+
+        <!-- Hidden fields to retain old image -->
+        <input type="hidden" name="existingImageUrl" value="<%= listing.image?.url || listing.image %>">
+        <input type="hidden" name="existingImageFilename" value="<%= listing.image?.filename || '' %>">
+
+        <button
+          type="submit"
+          class="bg-yellow-400 text-black font-semibold py-3 rounded-lg hover:bg-yellow-500 transition"
+        >
+          Update Listing
+        </button>
+      </form>
+
+
+      <a style="text-decoration: none;"
+        href="/listings"
+        class="mt-4 inline-block text-center text-yellow-400 hover:text-yellow-500 underline"
+      >
+        ← Back to Listings
+      </a>
+    </div>
+
+    <div class="flex-1 flex justify-center items-center">
+      <img
+        src="<%= listing.image.url %>"
+        alt="Listing Image"
+        class="rounded-lg max-h-80 object-cover border border-gray-600"
+      />
+    </div>
+  </div>
+</div>
+
+<script>
+  const form = document.getElementById('editForm');
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+
+    let valid = true;
+    const inputs = form.querySelectorAll('input[required]');
+
+    inputs.forEach(input => {
+      const error = input.nextElementSibling;
+
+      if (!input.value.trim()) {
+        input.classList.remove('border-white/20');
+        input.classList.add('border-red-500');
+        error.classList.remove('hidden');
+        valid = false;
+      } else {
+        input.classList.remove('border-red-500');
+        input.classList.add('border-green-500');
+        error.classList.add('hidden');
+      }
+    });
+
+    if (valid) {
+      form.submit(); // Actually submit if everything is valid
+    }
+  });
+</script>
